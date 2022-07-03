@@ -1,0 +1,87 @@
+import numpy as np
+import math
+import random
+
+
+# 连续型数据分类用正态分布公式
+def getPro(theData, mean, var):
+    pro = 1 / (math.sqrt(2 * math.pi) * math.sqrt(var)) * math.exp(-(theData - mean) ** 2 / (2 * var))
+    return pro
+
+def getK(Data, X):
+    add = 0
+    n = Data.shape[0]
+    for i in range(0, n):
+        add += 1 / math.sqrt(2 * math.pi * n) * math.exp(-(np.sum(np.square(Data[i] - X)) * n / 2))
+    return add
+
+'''
+def CountP1(test):
+    sum=1
+    for i in range(0,60):
+       sum*=getPro(test[i],
+def CountP2(test):
+    sum=1
+    for i in  range(0,60):
+        sum*=getPro(())
+'''
+
+X = np.loadtxt('[017]magic(0-1).txt')
+# 其中有97
+m = 10  # 属性数量
+n = 1902  # 样本数目 其中第一类1219，第二类683
+K = 2  # 类标记数量
+# 去掉类标记
+X = np.delete(X, 10, axis = 1)
+
+# 取训练集和测试集7：3比例
+Data1 = X[0:853, :]
+Data2 = X[1219:1697, :]
+trainingSet = np.vstack((Data1, Data2))
+# print(trainingSet)
+testSet1 = X[853:1219, :]
+testSet2 = X[1697:1902, :]
+# testSet = np.vstack((testSet1, testSet2))
+# print(testSet)
+
+'''
+# 求各类对应属性的均值和方差
+Mean1 = np.mean(Data1, axis = 0)
+Mean2 = np.mean(Data2, axis = 0)
+var1 = np.var(Data1, axis = 0)
+var2 = np.var(Data2, axis = 0)
+'''
+
+
+# 先求P(C)
+Pro1 = (853 + 1) / (1331 + 2)
+Pro2 = (478 + 1) / (1331 + 2)
+# print(Pro1)
+# print(Pro2)
+
+# 本次代码主要内容是这个，求P(Ai|C)
+
+# 统计正确数量和计算准确率
+add = 0
+for j in range(0, 366):
+    K1 = getK(Data1, testSet1[j])
+    K2 = getK(Data2, testSet1[j])
+    if (K1 / (K1 + K2)) > 0.5:
+        add += 1
+    else:
+        add += 0
+print("第一类正确数量(总数27)：")
+print(add)
+add1 = 0
+for j in range(0, 205):
+    K1 = getK(Data1, testSet2[j])
+    K2 = getK(Data2, testSet2[j])
+    if (K2 / (K1 + K2)) > 0.5:
+        add1 += 1
+    else:
+        add1 += 0
+print("第二类正确数量(总数34)：")
+print(add1)
+
+print("accuracy:{:.2%}".format((add+add1)/571))
+
